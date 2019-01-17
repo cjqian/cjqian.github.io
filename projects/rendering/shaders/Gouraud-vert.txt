@@ -1,0 +1,32 @@
+
+uniform float inflate;
+uniform vec3 ambient;
+uniform vec3 diffuse;
+uniform vec3 specular;
+uniform sampler2D texture;
+uniform vec3 lightDir;
+uniform float shininess;
+
+varying vec3 vColor;
+void main() {
+
+	vec3 a = ambient;
+  	vec3 b = diffuse * dot(normal, lightDir);
+  	
+  	vec3 v = normalize(cameraPosition - position);
+  	vec3 r = lightDir - (dot(2.0 * lightDir, normal)/(length(normal) * length(normal))) * normal;
+  	r = normalize(r);
+
+  	float newShininess = shininess + .001;
+  	vec3 c = specular * pow(dot(v, r), newShininess);
+
+  	vec3 phong = a + b + c;
+  	//modulate by texture
+    vColor = phong; 
+
+    vec3 newPos = position + inflate * normal;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( newPos, 1.0 );
+    // ----------- STUDENT CODE END ------------
+    
+
+}

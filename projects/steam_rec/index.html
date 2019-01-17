@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<!-- reload json -->
+<meta http-equiv="cache-control" content="no-cache"> 
+<meta http-equiv="expires" content="0"> 
+<meta http-equiv="pragma" content="no-cache">
+
+<meta charset="utf-8">
+<title>Steam Game Recommender</title>
+<link rel="stylesheet" href="steam-rec.css"/>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!--<link rel="stylesheet" href="css/bootstrap.css"/>-->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"/>
+<!--<link rel="stylesheet" href="css/jquery_ui.css"/>-->
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+<script>
+function takeAction() {
+    // Load D3.js, and once loaded do our stuff
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = "d3.js";
+    script.addEventListener('load', D3ok, false);
+    script.onload = "D3ok();";
+    head.appendChild(script);
+
+    //sets the steamID value
+    var steamID = "12343";
+    //steamID = document.getElementById('steamID').value;
+}
+</script>
+
+<script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+<!--<script src="js/jquery.js"></script>-->
+<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+<!--<script src="js/jquery_ui.js"></script>-->
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<!--<script src="js/bootstrap.js"></script>-->
+</head>
+<body onload="takeAction();">
+
+<div class="container" style="width:80%">
+    <!-----------HEADER-------------------------------------->
+    <div class="page-header">
+        <h1> Steam Recommender 
+            <small> A Visualization </small>
+        </h1>
+    </div>
+    <!-------------------------- MENU -------------------------------------->
+    <div class="row">
+        <div id="menu">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#chart">Chart View</a></li>
+                <li><a data-toggle="tab" href="#favorites" onClick="loadFavorites()">Favorites</a></li>
+                <li><a data-toggle="tab" href="#about">About</a><li>
+
+    <li style="float:right;"> 
+                <div class="ui-widget">
+                    <input id="gameSearch"></input>
+                    <span id="search-icon" onClick="searchSelectMovie();"><i class="fa fa-search"></i></span>
+                </div>
+            </li>
+                    </ul>
+
+    </div>
+</div>
+<div class="row">
+    <!-------------------------- NETWORK -------------------------------------->
+    <div class="tab-content" id="page-content-wrapper">
+     
+        <div id="chart" class="tab-pane fade in active">
+            <div id="chart" class="col-md-9">
+<div class="row">
+    <div class="fixed col-md-12"> 
+<br/>
+            <div id="genreTags"></div>
+<br/>
+    </div>
+</div>
+
+                <div id="movieNetwork"></div>
+            </div>
+
+    <!------------------------- SIDE PANEL ------------------------------------>
+<br/>
+            <div id="sidepanel" class="fixed col-md-3">
+                <div id="title">
+                </div>    
+
+                <div id="movieInfo" class="panel_off"></div>
+            </div>
+        </div>
+
+        <div id="favorites" class="tab-pane fade">
+            <br/>
+            <div id="favoritesList"></div>
+        </div>
+
+        <div id="about" class="tab-pane fade">
+            <br/>
+            <div class="row">
+            <div class="fixed col-md-1"></div>
+            <div class="fixed col-md-6">
+            <h3>Hi!</h3>
+            <p>This is a Steam Recommender, which recommends video games on <a href="http://www.steampowered.com">Steam's platform</a> based on games you've already played.</p>
+            <h4>How it works</h4>
+<p>
+Using the <a href="http://store.steampowered.com/api/appdetails?appids=4550">Steam game data API</a> and the <a href="tastekid.com/api/similar?q=starcraft&k=187070-SteamRec-O6Z9YASS">TasteKid recommendation API</a>, in addition to Steam developer tools to access user inventory, we choose a user's "top" games (based on playtime) and build out three levels of recommendations. (This can be changed; three looks the best visually.) ...
+</p>
+
+<h4>What it means</h4>
+<p>
+Thicker lines between nodes indicate stronger correlation (this will be updated eventually). 
+
+First level games (games already owned) are in dark blue, second level games (recommendations based on the first level games) are lighter, and third level games even more light.
+
+The size of the game is dependent upon its reviews by other users. 
+</p>
+            <h4>Still to do</h4>
+<p>
+<ul>
+                <li>Enable filtering by rating, price, etc.</li>
+                <li>Dynamic resizing for screens.</li>
+                <li>Ease of selection/navigation.</li>
+                <li>Allow users to make game lists on the fly (or other insects of their choice)</li>
+                <li>Multi-user interaction.</li>
+                </ul>
+            </p>
+
+<h5>Check out the project on <a href="http://www.github.com/cjqian/steam_rec/">Github.</a> (But not yet! I still have a ton of cleaning to do, rip.)</h5>
+            </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+<script src="steam-rec.js"></script>
+<script src="steam-rec-help.js"></script>
+</body>
+</html>
+

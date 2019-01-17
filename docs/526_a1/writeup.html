@@ -1,0 +1,560 @@
+<html>
+<head>
+	<title>Photon Mapping Writeup, COS 526</title>
+	<style>
+		body, figure
+		{
+			margin:.5em auto;
+			max-width:60em;
+			padding:0 .62em;
+			font: 1em/1.2em sans-serif; 
+			color:#444;
+		}
+
+		section
+		{
+			padding-top:1em;
+		}
+
+		h1,h2,h3
+		{
+			line-height:1.1em;
+		}
+
+		h3
+		{
+			padding-top:1em;
+		}
+
+		img
+		{
+			display:block;
+			width:100%;
+		}
+
+		td 
+		{
+			align:center;
+		}
+	</style>
+	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+</head>
+<body>
+
+	
+	<center>
+		<h1>
+			Writeup for COS 526 Assignment 1: Photon Mapping
+		</h1>
+		<h3> Crystal Qian, 10.14.16</h3>
+	</center>
+	<hr>
+	<section>
+		<p> Hi! This assignment implements a 2-part global illumination rendering algorithm.
+			<ol>
+				<li> A photon tracing stage that shoots photons from every light source/ traces these photons' paths through the scene.</li>
+				<li> A rendering stage that takes the resultant photons of the first step, and uses them to approximate lighting in a rendered image of a scene.</li>
+			</ol> 
+		</p>
+		<p>
+
+			All of my code is in <code>photonmapp.cpp</code>; even the <code>RenderImage()</code> material found in <code>rendering.cpp</code>. Other than adding a function in <code>R3Viewer.h</code> to take in doubles when calculating a <code>WorldRay</code> from an image (needed for <a href="#pixel_integration">pixel integration</a>), no libraries were changed. 
+		</p>
+
+		<p> I apologize in advance for the css on this website. css is really hard. </p>
+	</section>
+	<hr>
+	<section>
+		<h2> Phase 1: Photon tracing </h2>
+		<h3> Photon structure </h3>
+		Each item in our Photon class has the following components:
+		<ul>
+			<li>An <code>int Type</code>, which is either <code>Diffuse</code>, <code>Specular</code>, <code>Transmission</code>, or <code>Emitted</code>.</li>
+			<li>Points to <code>Photon* Prev</code> and <code>Photon* Next</code>, which is super useful for visualizing paths and also for checking paths for caustic properties. <code>Prev</code> is <code>NULL</code> for emitted photons.</li>
+			<li>The <code>RNRgb Power</code> of the photon.</li>
+			<li>A <code>R3Ray Ray</code> showing the starting point of the photon, and the direction its path leads in <a href="#scattering">scattering</a>. This direction is <code>NULL</code> for terminal photons.</li>
+		</ul>
+
+		<h3 id="photon_emission"> Photon emission </h3>
+		<p> There's a hard-coded number of photons (<code>_nTotalPhotons = 100000</code>) that are shot out of the scene in total. What, so many photons?? If an emitted photon doesn't intersect with our scene, we don't care. It's the scene's loss! <i class="em em-laughing"></i> We don't replace the non-intersecting photon ray with another, which is why we emit so many to begin with. Space is not a limiting factor.</p>
+
+		<p> We give a proportion of these photons to each light in the scene, dependent on the light's intensity. Also, note that each photon's power is proportional to how many photons are shot out of that particular light! These emitted light visualizations have each photon's intensity as equal to the intensity of the light, so you can clearly see where photons are coming from. In implementation, however, because we're shooting many photons, each photon should carry very little power.</p>
+
+		<h4> Point lights </h4>
+		<p> Point lights are pretty straightforward; we position the photon at the source of the light, and emit in an arbitrary direction. </p> 
+
+		<table>
+			<tr>
+				<td>
+					<figure>
+						<img src="output/p1.jpg"/>
+						<figcaption><code>pointlight1.scn</code>, showing paths.</figcaption>
+					</figure>
+				</td>
+				<td>
+					<figure>
+						<img src="output/p3.jpg"/>
+						<figcaption><code>pointlight1.scn</code>, showing photons.</figcaption>
+					</figure>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<figure>
+						<img src="output/p2.jpg"/>
+						<figcaption><code>pointlight2.scn</code>, showing paths.</figcaption>
+					</figure>
+				</td>
+				<td>
+					<figure>
+						<img src="output/p4.jpg"/>
+						<figcaption><code>pointlight2.scn</code>, showing photons.</figcaption>
+					</figure>
+				</td>
+			</tr>
+		</table>
+
+		<p> (I tried to tilt the image for points so you could see the sphere on the surface of the ground.) </p>
+
+		<h4> Area lights </h4>
+		<p> Area lights are stored as a circle and a normal. We emit photons from randomly chosen points on the circle, in a cosine-weighted random direction (more likely to shoot in the direction of the normal). </p>
+
+		<table>
+			<tr>
+				<td>
+					<figure>
+						<img src="output/a1.jpg"/>
+						<figcaption><code>arealight1.scn</code>, showing paths.</figcaption>
+					</figure>
+				</td>
+				<td>
+					<figure>
+						<img src="output/a3.jpg"/>
+						<figcaption><code>arealight1.scn</code>, showing photons.</figcaption>
+					</figure>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<figure>
+						<img src="output/a2.jpg"/>
+						<figcaption><code>arealight2.scn</code>, showing paths.</figcaption>
+					</figure>
+				</td>
+				<td>
+					<figure>
+						<img src="output/a4.jpg"/>
+						<figcaption><code>arealight2.scn</code>, showing photons.</figcaption>
+					</figure>
+				</td>
+			</tr>
+		</table>
+
+		<h4> Spot lights </h4>
+		<p> Spot lights are stored as a point, direction, cutoff angle, and drop off rate. We shoot photons from the spot light's origin in the hemisphere indicated by the direction, reject those that exceed the cutoff angle, and select photons randomly in proportion to a cosine/drop off rate ratio.<p>
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/s1.jpg"/>
+							<figcaption><code>spotlight1.scn</code>, showing paths.</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/s2.jpg"/>
+							<figcaption><code>spotlight2.scn</code>, showing paths.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+			<h4> Directional lights </h4>
+			<p> Directional lights are a bit difference, since they don't have a point of origin, only a direction. We make a moderately large circle outside of the bounds of the scene, and pick random points on that circle to shoot points into the specified direction. It's not specified how large of an area this directional light covers, so we arbitarily (lazily, probably) assume the area is exactly how large we make it so that our photon intensities are perfect.</p>
+
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/d1.jpg"/>
+							<figcaption><code>dirlight1.scn</code>, showing paths.</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/d2.jpg"/>
+							<figcaption><code>dirlight2.scn</code>, showing paths.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3 id="scattering"> Photon scattering/ Russian Roulette/ BRDF importance sampling </h3>
+
+			<p> Now that we have all of these emitted photons, it's time to scatter them across the scene! (If you're following along in the code, this is my <code>TracePhoton()</code> function.) First, we find an intersection of the emitted photon with the scene. Depending on the <code>brdf</code> properties of the intersection material, there are probabilities of the path going in a diffuse, specular, or tranmission direction. Or, the path could terminate. This is Russian Roulette! My implementation gives each photon a 95% survival rate. When the photon continues, it will lose power proportional to its probability of surviving. Here are some examples of what our renderings would look like if the survival rate was lower.</p>
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/russian_roulette.jpg"/> 
+							<figcaption>Probability of survival is .3.</figcaption>
+						</figure>
+					</td>			
+
+					<td>
+						<figure>
+							<img src="output/russian_roulette_2.jpg"/> 
+							<figcaption>Probability of survival is .6.</figcaption>
+						</figure>
+					</td>		
+				</tr>
+			</table>
+
+			<p id="direction_calculation"> If we decide that the path continues in a diffuse direction, we return a random direction along the hemisphere defined by the normal of the intersection. If the path continues in a specular direction, we choose a direction related to the shininess and angle. (Jason Lawrence's notes are really helpful here.) If the path continues in a transmission direction, based on the index of refraction and normal, we use Snell's law to get the new direction.</p>
+
+			<h3> Multiple photon maps </h3>
+
+			<p> As we trace the photons, we store the diffuse photons in either a global or caustic kdtree map, based on the path the photon has traversed. If the path is from an emitted photon to a specular/transmission photon to the current diffuse photon, then we store the photon in our caustic map. If the diffuse photon took some other path, we store it in our global map. So, there are no caustic photons in the global map. </p>
+
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/global_map_20.jpg"/> 
+							<figcaption>Paths from the global map (<code>-ntotalphotons = 20</code>).</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/global_map.jpg"/> 
+							<figcaption>Paths from the global map (<code>-ntotalphotons = 300</code>).</figcaption>
+						</figure>
+					</td>			
+				</tr>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/caustic_500.jpg"/> 
+							<figcaption>Paths from the caustic map (<code>-ntotalphotons = 500</code>).</figcaption>
+						</figure>
+					</td>		
+					<td>
+						<figure>
+							<img src="output/caustic_5000.jpg"/> 
+							<figcaption>Paths from the caustic map (<code>-ntotalphotons = 500</code>).</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<p> Notice that as rays bounce off the colored sides, the power changes slightly to reflect this bounce. That's why some subsequent rays are red or blue.</p>
+		</section>
+		<hr>
+		<section>
+			<h2> Phase 2: rendering </h2>
+
+			<h3> Camera ray tracing </h3>
+			<p> We generate ray<a href="#pixel_integration"/>(s)</a> through each pixel and trace them through the scene, estimating radiance at each point (this is our <code>GetIllumination()</code> call). The total radiance is the sum of direct illumination, specular/transmission path illumination, indirect illumination, and caustic illumination. </p>
+
+			<p> To calculate direct illumination at a point, We iterate through each light in the scene. For each point not in <a href="#shadow"/>shadow</a>, we add the light's reflection at that point to our total illumination calculation.</p>
+			<p> If the brdf of the intersected material has some specular or transmission component, we get the <a href="#direction_calculation">new specular or transmission direction</a> and recursively <code>GetIllumination</code> through the resulting ray, summing the illumination proportional to the value of the specular/transmission property. We cut off this recursion at depth 10. </p>
+
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/writeup_dironly.jpg"/>
+							<figcaption>Direct illumination only with default parameters.</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_dirmc.jpg"/>
+							<figcaption>Sum of direct illumination and specular/tranmission illumination with default parameters.</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_dirmccaustic.jpg"/>
+							<figcaption>Sum of direct illumination, specular/tranmission illumination, and caustic illumination with default parameters.</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_all.jpg"/>
+							<figcaption>Sum of all four parts of our radiance estimation: direct, specular/transmission, caustic, and indirect.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3 id="radiance_estimation"> Indirect, caustic illumination (radiance estimation)</h3>
+			<p> For indirect illumination calculations, we find the <code>-nneighbors</code> neighboring photons closest to our point in the global kdtree. We sum a <a href="#filtering">factor</a> of each photon's power in proportion to its distance and normal relational to the current point, divided by the radius of photons in the area. Approximately the same approach is applied to calculate caustic illumination, except we search in the caustic kdtree. </p>
+
+			<p> Below are some results with varying <code>-nneighbors</code>. Notice that the image becomes less "spotted" when we add calculations from more neighbors.</p>
+			<table>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/writeup_neighbors2.jpg"/> 
+							<figcaption><code>-nneighbors = 2</code></figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_neighbors4.jpg"/> 
+							<figcaption><code>-nneighbors = 4</code></figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_neighbors32.jpg"/> 
+							<figcaption><code>-nneighbors = 32</code></figcaption>
+						</figure>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/writeup_neighbors64.jpg"/> 
+							<figcaption><code>-nneighbors = 64</code></figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_all.jpg"/> 
+							<figcaption><code>-nneighbors = 128</code></figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_neighbors256.jpg"/> 
+							<figcaption><code>-nneighbors = 256</code></figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3 id="pixel_integration"> Pixel integration </h3>
+			<p> For antialiasing and overall better visual effect, we shoot multiple rays through each pixel. For each pixel in the image, we randomly generate <code>-raysperpixel</code> points in the neighborhood of that pixel, and perform lighting calculations from each point. Then, we average the result. </p>
+
+			<p> Below are some results with varying <code>-raysperpixel</code>. Edges look more clear as this value increases. (Looks more clear zoomed up.)</p>
+
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/writeup_rpp2.jpg"/> 
+							<figcaption><code>-raysperpixel = 2</code></figcaption>
+						</figure>
+					</td>			
+
+					<td>
+						<figure>
+							<img src="output/writeup_rpp4.jpg"/> 
+							<figcaption><code>-raysperpixel = 4</code></figcaption>
+						</figure>
+					</td>	
+
+					<td>
+						<figure>
+							<img src="output/writeup_rpp8.jpg"/> 
+							<figcaption><code>-raysperpixel = 8</code></figcaption>
+						</figure>
+					</td>	
+				</tr>
+			</table>
+
+			<h3> Rendering parameters </h3>
+
+			<p> We added the following parameters for rendering. </p>
+			<ul>
+				<li> <code>-raysperpixel</code> takes in the number of rays shot through each pixel. The default is 4. (This is used for <a href="#pixel_integration">pixel integration</a>.)</li>
+
+				<li> <code>-nneighbors</code> takes in the number of closest photons to each point used in indirect lighting calculations. The default is 128. (This is used for <a href="#radiance_estimation">radiance estimation</a>).</li>
+
+				<li> <code>-totalphotons</code> takes in the total number of photons shot through the scene. The default is 100000. (This is used for <a href="#photon_emission">photon emission</a>.</li>
+			</ul>
+
+			<p> If you would like to visualize the global and caustic maps, it's advised that you do not divide the emitted photons' powers by the number emitted so the paths won't look black. After removing this part from the code, pressing 'O' will toggle vector and intersection represetnations of the global map, and 'P' will do the same for the caustic map.</p>
+		</section>
+		<hr>
+		<section>
+			<h2> Other things </h2>
+			<h3> Gamma filtering </h3>
+			<p> Gamma filtering changed my life. Before applying this (learned in COS 426), I was wondering why my code didn't work. After applying this, my code worked. It's a really great story, actually, </p>
+
+			<table>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/no-gamma.jpg"/> 
+							<figcaption>No gamma filter.</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/gamma.jpg"/> 
+							<figcaption>Gamma filter with gamma = .9.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3 id="filtering"> Filtering </h3>
+			<p> As in Jensen 2.3.2, I implemented cone filtering for indirect illumination calculations (such that each photon's contribution is inversely proportional to its distance from the targeted point), and Gaussian filtering for caustic illumination calculations. As a result, you'll notice that my caustics look pretty faint, but I think that the overall aesthetic is much nicer. </p>
+			<table>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/indirect-nofilter.jpg"/> 
+							<figcaption>Indirect illumination without cone filter.</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/indirect-filter.jpg"/> 
+							<figcaption>Indirect illumination with cone filter.</figcaption>
+						</figure>
+					</td>
+				</tr>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/caustic_nofilter.jpg"/> 
+							<figcaption>Caustic illumination without Gaussian filter.</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/caustic_filter.jpg"/> 
+							<figcaption>Caustic illumination with Gaussian filter.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3 id="shadow"> Shadow enhancement </h3>
+			<p> Notice that we added a shadow calculation to direct lighting. We fire a ray from a light to an intended point; if the intersection is not where we expect, there must be an occlusion. In that case, we don't add the lighting calculation for that light. </p>
+			<table>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/writeup_noshadow.jpg"/> 
+							<figcaption>No shadow.</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/writeup_yesshadow.jpg"/> 
+							<figcaption>Shadow.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3> Happy accidents </h3>
+			<table>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/accident.jpg"/> 
+							<figcaption>Accident 1</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident2.jpg"/> 
+							<figcaption>Accident 2</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident3.jpg"/> 
+							<figcaption>Accident 3</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident4.jpg"/> 
+							<figcaption>Accident 4</figcaption>
+						</figure>
+					</td>
+				</tr>
+				<tr>
+					<td>	
+						<figure>
+							<img src="output/accident5.jpg"/> 
+							<figcaption>Accident 5</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident6.jpg"/> 
+							<figcaption>Accident 6</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident7.jpg"/> 
+							<figcaption>Accident 7</figcaption>
+						</figure>
+					</td>
+					<td>	
+						<figure>
+							<img src="output/accident8.jpg"/> 
+							<figcaption>Accident 8</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3> Art / other scenes </h3>
+			<table>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/writeup_fourspheres.jpg"/> 
+							<figcaption><code>fourspheres.scn</code></figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_cos526.jpg"/> 
+							<figcaption><code>cos526.scn</code>.</figcaption>
+						</figure>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<figure>
+							<img src="output/writeup_transform.jpg"/> 
+							<figcaption><code>transform.scn</code>
+							</figcaption>
+						</figure>
+					</td>
+					<td>
+						<figure>
+							<img src="output/writeup_specular.jpg"/> 
+							<figcaption><code>specular.scn</code>.</figcaption>
+						</figure>
+					</td>
+				</tr>
+			</table>
+
+			<h3> Citations </h3>
+			<ul>
+				<li><a href="http://www.cs.princeton.edu/courses/archive/fall16/cos526/lectures/02-montecarlo.pdf">Lecture Notes: Monte Carlo Path Tracing</a></li>
+				<li><a href="http://www.cs.princeton.edu/courses/archive/fall16/cos526/lectures/03-photonmapping.pdf">Lecture Notes: Photon Mapping</a></li>
+				<li><a href="http://web.cse.ohio-state.edu/~hwshen/681/Site/Slides_files/reflection_refraction.pdf">Lecture Notes: Reflection and Refraction</a></li>
+				<li><a href="http://web.cs.wpi.edu/~emmanuel/courses/cs563/write_ups/zackw/photon_mapping/PhotonMapping.html">Notes: Zach Waters' Photon Mapping</a></li>
+				<li><a href="http://www.cs.princeton.edu/courses/archive/fall16/cos526/papers/importance.pdf">Notes: Jason Lawrence's Phong Model</a></li>
+				<li><a href="http://www.cs.princeton.edu/courses/archive/fall16/cos526/papers/jensen01.pdf">Notes: Jensen's A Practical Guide to Global Illumination using Photon Mapping </a></li>
+			</ul>
+
+			<p>
+				This assignment took a long time, but it was so rewarding to see all the pieces coming together! 
+			</p>
+		</section>
+
+	</body>
+	</html>

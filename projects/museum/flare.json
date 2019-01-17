@@ -1,0 +1,546 @@
+{
+    "name": "Museum Exhibitions 2000 - 2007",
+    "children": [
+    {
+        "name": "2000",
+        "children": [
+        {
+            "name": "1900: Art at the Crossroads",
+            "children": [
+            {
+                "name": "Cistern in the Park of Château Noir",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Cézanne: au fil de l'eau",
+            "children": [
+            {
+                "name": "Fountain, Place de la Mairie in Aix-en-Provence",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Cézanne: Finished–Unfinished",
+            "children": [
+            {
+                "name": "Undergrowth",
+                "size": 1000
+            },
+            {
+                "name": "Trees and Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Mont Sainte-Victoire",
+                "size": 1000
+            },
+            {
+                "name": "Route to Le Tholonet",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Chaim Soutine. Ein franzosischer Expresionist",
+            "children": [
+            {
+                "name": "Chemin de la Fontaine des Tins at Céret",
+                "size": 1000
+            },
+            {
+                "name": "Hanging Turkey",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "École de Paris",
+            "children": [
+            {
+                "name": "Self-Portrait",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Paris in New York: French Jewish Artists in Private Collections",
+            "children": [
+            {
+                "name": "Léon Indenbaum",
+                "size": 1000
+            },
+            {
+                "name": "Head",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Soutine: Céret 1919-1922",
+            "children": [
+            {
+                "name": "Chemin de la Fontaine des Tins at Céret",
+                "size": 1000
+            },
+            {
+                "name": "Steeple of Saint-Pierre at Céret",
+                "size": 1000
+            },
+            {
+                "name": "View of Céret",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2001",
+        "children": [
+        {
+            "name": "Gauguin's Nirvana: Painters at Le Pouldu 1889-90",
+            "children": [
+            {
+                "name": "Woman of Martinique",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Impressionist Still Life",
+            "children": [
+            {
+                "name": "Still Life: Apples and Pears in a Round Basket",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2002",
+        "children": [
+        {
+            "name": "Amedeo Modigliani: L'ange au visage grave",
+            "children": [
+            {
+                "name": "Léon Indenbaum",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Cézanne in Focus: Watercolors from the Henry and Rose Pearlman Collection",
+            "children": [
+            {
+                "name": "Three Pairs",
+                "size": 1000
+            },
+            {
+                "name": "House in Provence",
+                "size": 1000
+            },
+            {
+                "name": "Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Rocks at Bibémus",
+                "size": 1000
+            },
+            {
+                "name": "Study of a Skull",
+                "size": 1000
+            },
+            {
+                "name": "Forest Interior",
+                "size": 1000
+            },
+            {
+                "name": "Fountain, Place de la Mairie in Aix-en-Provence",
+                "size": 1000
+            },
+            {
+                "name": "Path, Trees, and Walls",
+                "size": 1000
+            },
+            {
+                "name": "Undergrowth",
+                "size": 1000
+            },
+            {
+                "name": "Chemin des Lauves: The Turn in the Road",
+                "size": 1000
+            },
+            {
+                "name": "Trees and Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Mont Sainte-Victoire",
+                "size": 1000
+            },
+            {
+                "name": "Trees Forming an Arch",
+                "size": 1000
+            },
+            {
+                "name": "Forest Path",
+                "size": 1000
+            },
+            {
+                "name": "Still Life with Carafe, Bottle, and Fruit",
+                "size": 1000
+            },
+            {
+                "name": "Aeneas Meeting Dido at Carthage",
+                "size": 1000
+            },
+            {
+                "name": "Trees",
+                "size": 1000
+            },
+            {
+                "name": "Portrait de Cézanne",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Modigliani and the Artists of Montparnasse",
+            "children": [
+            {
+                "name": "Jean Cocteau",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Paris: Capital of the Arts, 1900–1968",
+            "children": [
+            {
+                "name": "Hanging Turkey",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "The Lure of the Exotic: Gauguin in New York Collections",
+            "children": [
+            {
+                "name": "Te Fare Amu (The House for Eating)",
+                "size": 1000
+            },
+            {
+                "name": "Woman of Martinique",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2003",
+        "children": [
+        {
+            "name": "Henri de Toulouse-Lautrec: uno sguardo dentro la vita",
+            "children": [
+            {
+                "name": "Messalina",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Jean Cocteau, sur le fil du siecle",
+            "children": [
+            {
+                "name": "Jean Cocteau",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "La Belle Époque and Toulouse-Lautrec",
+            "children": [
+            {
+                "name": "Messalina",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2004",
+        "children": [
+        {
+            "name": "Cézanne in the Studio: Still Life in Watercolors",
+            "children": [
+            {
+                "name": "Three Pears",
+                "size": 1000
+            },
+            {
+                "name": "Still Life with Carafe, Bottle, and Fruit",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Cezanne: Aufbruch in die Moderne",
+            "children": [
+            {
+                "name": "Route to Le Tholonet",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Degas: Classico e Moderno",
+            "children": [
+            {
+                "name": "After the Bath, Woman Drying Herself",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Modigliani: Beyond the Myth",
+            "children": [
+            {
+                "name": "Jean Cocteau",
+                "size": 1000
+            },
+            {
+                "name": "Léon Indenbaum",
+                "size": 1000
+            },
+            {
+                "name": "Head",
+                "size": 1000
+            },
+            {
+                "name": "Anadiomena",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2005",
+        "children": [
+        {
+            "name": "Manet",
+            "children": [
+            {
+                "name": "Young Woman in a Round Hat",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Pioneering Modern Painting: Cézanne and Pissarro 1865-1885",
+            "children": [
+            {
+                "name": "Stlil Life: Apples and Pears in a Round Basket",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Right Under the Sun - Painting in Provence from Classicism to Modernism (1750 - 1920)",
+            "children": [
+            {
+                "name": "Cistern in the Park of Château Noir",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Toulouse-Lautrec and Montmartre",
+            "children": [
+            {
+                "name": "The Sacred Grove",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    },
+    {
+        "name": "2006",
+        "children": [
+        {
+            "name": "Ambroise Vollard: Patron of the Avant-Garde",
+            "size": 2000
+        },
+        {
+            "name": "Casas Grandes and the Ceramic Art of the Ancient Southwest",
+            "children": [
+            {
+                "name": "Bowl with parrot",
+                "size": 1000
+            },
+            {
+                "name": "Bowl with geometric designs",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Cézanne in Provence",
+            "children": [
+            {
+                "name": "Pine Tree in Front of the Caves above Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Rocks at Bibémus",
+                "size": 1000
+            },
+            {
+                "name": "Fountain, Place de la Mairie in Aix-en-Provence",
+                "size": 1000
+            },
+            {
+                "name": "Chemin des Lauves: The Turn in the Road",
+                "size": 1000
+            },
+            {
+                "name": "Trees and Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Mont Sainte-Victoire",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Modernist Art: Prints, Drawings, and Photographs",
+            "children": [
+            {
+                "name": "Women by the River (Auti te pape), from the Noa Noa suite",
+                "size": 1000
+            },
+            {
+                "name": "Self-Portrait",
+                "size": 1000
+            },
+            {
+                "name": "The Mirror",
+                "size": 1000
+            },
+            {
+                "name": "Kleine Welten (Small Worlds): Plate VI",
+                "size": 1000
+            },
+            {
+                "name": "Dream and Lie of Franco (Sueño y Mentira de Franco)",
+                "size": 1000
+            },
+            {
+                "name": "The Cologne Painter Anton Räderscheidt",
+                "size": 1000
+            },
+            {
+                "name": "Customs Officials, Hamburg",
+                "size": 1000
+            },
+            {
+                "name": "The Young Soldier, Westerwald",
+                "size": 1000
+            },
+            {
+                "name": "Untitled Photogram",
+                "size": 1000
+            },
+            {
+                "name": "Untitled (negative nude)",
+                "size": 1000
+            },
+            {
+                "name": "Bass",
+                "size": 1000
+            },
+            {
+                "name": "Kaufhaus Sinn",
+                "size": 1000
+            },
+            {
+                "name": "The Bride",
+                "size": 1000
+            },
+            {
+                "name": "Composition #3",
+                "size": 1000
+            },
+            {
+                "name": "Untitled portrait, from the series: Metamorphosis Through Light",
+                "size": 1000
+            },
+            {
+                "name": "Untitled",
+                "size": 1000
+            },
+            {
+                "name": "Pilsudski",
+                "size": 1000
+            },
+            {
+                "name": "Plastron et cravate (Shirtfront and Necktie)",
+                "size": 1000
+            },
+            {
+                "name": "Trees and Cistern in the Park of Château Noir",
+                "size": 1000
+            },
+            {
+                "name": "Untitled (fashion study)",
+                "size": 1000
+            },
+            {
+                "name": "Lefortovo, Student Village",
+                "size": 1000
+            },
+            {
+                "name": "untitled (model in Herbert Bayer costume design, Bauhaus)",
+                "size": 1000
+            },
+            {
+                "name": "Vortex with Radiations",
+                "size": 1000
+            }
+            ]
+        },
+        {
+            "name": "Treasures of Sacred Maya Kings",
+            "size": 2000
+        }
+        ]
+    },
+    {
+        "name": "2007",
+        "children": [
+        {
+            "name": "Déjà Vu? Revealing Repetition in French Masterpieces",
+            "children": [
+            {
+                "name": "Standing Bather Seen from Behind",
+                "size": 1000
+            }
+            ]
+        }
+        ]
+    }
+    ]
+}

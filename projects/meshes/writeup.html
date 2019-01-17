@@ -1,0 +1,181 @@
+<head>
+    <title> COS426 Assignment 2 &mdash; Modeling &mdash; Writeup</title>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+    <script src="js/student.js"> </script>
+    <script src="js/writeup.js"> </script>
+    <div class="top">
+    <div class="main_div">
+
+        <h1> <div class=assignment>COS426 Assignment 2</div>Modeling &mdash; Writeup</h1>
+        <h2>Switch to: <a href='index.html'>Interactive Editor</a></h2>
+        <div class='selectable'>
+        <h2 id='student'></h2>
+        
+        Features Implemented:
+<ul>
+<li>(0.0) <a href='#Translation'>Translation</a></li>
+<li>(1.0) <a href='#Rotation'>Rotation</a></li>
+<li>(0.5) <a href='#Scale'>Scale</a></li>
+<li>(1.5) <a href='#Traversal'>Traversal</a></li>
+<li>(0.5) <a href='#Face+area'>Face area</a></li>
+<li>(0.5) <a href='#Per-vertex+normals'>Per-vertex normals</a></li>
+<li>(0.5) <a href='#Average+edge+lengths'>Average edge lengths</a></li>
+<li>(0.5) <a href='#Twist+around+Y'>Twist around Y</a></li>
+<li>(1.0) <a href='#Inflate'>Inflate</a></li>
+<li>(1.0) <a href='#Wacky'>Wacky</a></li>
+<li>(1.0) <a href='#Noise'>Noise</a></li>
+<li>(1.5) <a href='#Smooth'>Smooth</a></li>
+<li>(1.0) <a href='#Sharpen'>Sharpen</a></li>
+<li>(0.5) <a href='#Triangulate'>Triangulate</a></li>
+<li>(2.0) <a href='#Truncate'>Truncate</a></li>
+<li>(1.0) <a href='#Split+long+edges'>Split long edges</a></li>
+<li>(1.0) <a href='#Triangle+subdivision'>Triangle subdivision</a></li>
+<li>(1.0) <a href='#Loop+subdivision'>Loop subdivision</a></li>
+<li>(1.0) <a href='#Quad+subdivision'>Quad subdivision</a></li>
+<li>(1.0) <a href='#Art'>Art Contest</a></li>
+        </ul></div>
+
+<p><hr><p><a name='Translation'></a><h2>Translation</h2><p><hr><p>
+
+    This feature was implemented by the course staff. 
+    I used it as an example of how to loop over the vertices of a mesh.
+    <p>
+    Here is an example output where the mesh is translated
+    <a href='batch.html?meshFile=cube.obj&apply&translateX=3'>by 
+    3 along the x axis</a>:
+    <p>
+    <img src='results/translate3.png'>
+    <p>
+    I did not encounter any particular challenges in implementing this.
+
+<p><hr><p><a name='Rotation'></a><h2>Rotation</h2><p><hr><p>
+    This feature rotates the object in first the x, y, then z direction depending on the given rotation value. 
+
+    <p>
+    <a href = 'batch.html?meshFile=cube.obj&apply&rotateX=0.50'>Here is an example where the mesh is rotated .5 in the x direction.</a></p>
+    <img src = 'results/rotate.png'>
+    <p>
+    <a href = 'batch.html?meshFile=cube.obj&apply&rotateY=1&rotateZ=1'> Here is an example where the mesh is rotated 1 in both the y and z direction.</a></p>
+    <img src = 'results/rotate2.png'>
+    <p>
+    This took a little bit of time since I was unaware that we could just use applyAxisAngle function.
+
+
+<p><hr><p><a name='Scale'></a><h2>Scale</h2><p><hr><p>
+    Scale simply multiplies the position of each vertex by its given scalar factor.
+    <p>
+    <a href = 'batch.html?meshFile=cube.obj&apply&scale=2.3'>Here is when it is scaled by 2.3.</a></p>
+    <img src = 'results/scale.png'>
+</p><p>
+    <a href = 'batch.html?meshFile=cube.obj&apply&scale=.36'>Here is when it is scaled by .36.</a></p>
+    <img src = 'results/scale2.png'>
+
+<p><hr><p><a name='Traversal'></a><h2>Traversal</h2><p><hr><p>
+    <p>
+        <b>Face traversal functions</b>
+        <ul>
+            <li><i>Vertices on Face</i>: Returns all vertices that lie on a given face. Start with the half-edge associated with the face. Push the half-edge's vertex onto an array, then follow the the half-edge's next half-edge's vertex. Follow and repeat this until the current half-edge's next is the initial half-edge (meaning we have finished a face). Return the array of vertices.</li>
+            <li><i>Edges on Face</i>: Return all edges of a given face. Same traversal method as the previous, except we push the half-edge itself rather than its vertex into the resultant array.</li>
+            <li><i>Faces on Face</i>: Return all faces that border a given face. Same traversal method as above, except we push the face associated with each half-edge traversing the current edge into the resultant array.</li>
+        </ul>
+
+        <b>Vertex traversal functions</b>
+        <ul>
+            <li><i>Vertices on Vertex</i>: Returns all neighboring vertices of a vertex. Pushes initial vertex. Then, pushes the vertex's half-edge's opposite's next vertex (another vertex that neighbors the initial vertex). Repeats until the current half-edge being investigated is the initial half edge. </li>
+            <li><i>Edges on Vertex</i>: Returns all faces bordering a vertex. Same traversal as above, except pushes the half-edge itself rather than the half-edge's vertex (starting with initial vertex's associated half-edge. </li>
+            <li><i>Faces on Vertex</i>: Returns all faces bordering a vertex. Same traversal as above, except pushes the half-edge's associated face rather than the half-edge itself. </li>
+        </ul>
+        <b>Edge traversal functions</b>
+        <ul>
+            <li><i>Vertices on Edge</i>: Returns the two vertices that make up an edge. Start with the edge's associated vertex, then push the vertex of the half-edge going in the opposite direction. Repeat this (this should only occur once) until the opposite's opposite is the initial.</li>
+            <li><i>Faces on Edge</i>: Returns the two faces that are on each side of the given edge. Same traversal as above, except pushes the half-edge's face rather than vertex.</li>
+<p><hr><p><a name='Face+area'></a><h2>Face area</h2><p><hr><p>
+    <p> Facial area is the sum of the area of each face. For each face, triangulate and calculate the sum of all the area triangles. </p>
+
+<p><hr><p><a name='Per-vertex+normals'></a><h2>Per-vertex normals</h2><p><hr><p>
+    <p> Sums and averages the normals of neighbors to get resultant vertex normal. </p>
+
+<p><hr><p><a name='Average+edge+lengths'></a><h2>Average edge lengths</h2><p><hr><p>
+    <p> Average edge lengths calculates the distance from a vertex to each of its neighboring vertices, sums them, and divides by the number of neighboring vertices/edges. </p>
+
+<p><hr><p><a name='Twist+around+Y'></a><h2>Twist around Y</h2><p><hr><p>
+<p> For each vertex, manipulate the y-value by the factor given. 
+    <a href='batch.html?meshFile=large_cube.obj&apply&twist=3.14'>Here it is with factor 3.14.</a></p>
+    <img src = 'results/twist.png'>
+    <p><a href='batch.html?meshFile=large_cube.obj&apply&twist=-3.14'>Here it is with factor -3.14.</a></p>
+    <img src = 'results/twist2.png'>
+
+<p><hr><p><a name='Inflate'></a><h2>Inflate</h2><p><hr><p>
+    Inflate multiplies each vertex by a factor along its normal. I decided not to augment the operation by the average edge length. 
+
+    <p><a href='batch.html?meshFile=hand.obj&apply&inflate=0.1'>Here the hand is inflated by .1.</a></p>
+    <img src = 'results/inflate.png'>
+
+    <p><a href='batch.html?meshFile=hand.obj&apply&inflate=-0.1'>Here the hand is deflated by .1.</a></p>
+    <img src = 'results/deflate.png'>
+
+<p><hr><p><a name='Wacky'></a><h2>Wacky</h2><p><hr><p>
+    I played around with sin and cos and got this pretty cool design on large cube; when positive, it kind of does a bevel.
+    <p><a href='batch.html?meshFile=large_cube.obj&apply&wacky=-1'>Here is large cube at -1.</a></p>
+    <img src = 'results/wacky.png'>
+    <p><a href='batch.html?meshFile=large_cube.obj&apply&wacky=1'>Here is large cube at 1.</a></p>
+    <img src = 'results/wacky2.png'>
+
+<p><hr><p><a name='Noise'></a><h2>Noise</h2><p><hr><p>
+    Noise moves each vertex along the direction of its vertex normal a random factor.
+    <p><a href='batch.html?meshFile=large_cube.obj&apply&noise=0.50'>Here is random at .5 on a large cube.</a></p>
+    <img src = 'results/noise.png'>
+
+<p><hr><p><a name='Smooth'></a><h2>Smooth</h2><p><hr><p>
+    Moves each vertex to a weighted gaussian of it and its neighbors, normalized.
+    <p><a href='batch.html?meshFile=cheetah.obj&apply&smooth=5'>Here's the cheetah at smooth 5.</a></p>
+    <img src = 'results/smooth.png'>
+<p><hr><p><a name='Sharpen'></a><h2>Sharpen</h2><p><hr><p>
+    Sharpen does the opposite of smooth, moving each vertex to the weighted gaussian of the opposites to provide greater difference in the mesh.
+    <a href='batch.html?meshFile=cheetah.obj&apply&sharpen=2&triangulate=true'>Here's the cheetah at sharpen 2, triangulated.</a>
+    <img src = 'results/sharpen.png'>
+
+<p><hr><p><a name='Bilateral+smooth'></a><h2>Bilateral smooth</h2><p><hr><p>
+(Your description of Bilateral smooth goes here...)
+
+<p><hr><p><a name='Triangulate'></a><h2>Triangulate</h2><p><hr><p>
+    Triangulates each face by splitting each face every two vertices. 
+    <p><a href='batch.html?meshFile=octopus.obj&apply&triangulate=true'>Here's the octopus with triangulated faces, but the effect is kind of lost if you don't have the mesh view thing turned on.</a></p>
+    <img src = 'results/triangle.png'>
+
+<p><hr><p><a name='Truncate'></a><h2>Truncate</h2><p><hr><p>
+    Truncate works, for the most part; something is off with the final positioning, which makes the factors a bit skewed.
+    <p><a href='batch.html?meshFile=cube.obj&apply&truncate=0.49'>Here is cube with truncate .49.</a></p>
+    <img src = 'results/trunc.png'>
+
+<p><hr><p><a name='Split+long+edges'></a><h2>Split long edges</h2><p><hr><p>
+I gave it a shot. You can see what I have here.
+    <img src = 'results/split.png'>
+<p><hr><p><a name='Triangle+subdivision'></a><h2>Triangle subdivision</h2><p><hr><p>
+After making sure all faces are triangles, pushes each unique edge, splits it, then splits the face (like in precept 5 notes). 
+<p><a href = 'batch.html?meshFile=hand.obj&apply&triSubdiv=1'>Here's the hand subdivided with level 1.</a></p>
+<img src = 'results/tsub.png'>
+
+<p><hr><p><a name='Loop+subdivision'></a><h2>Loop subdivision</h2><p><hr><p>
+Something is off with the math, which makes it skewed and then no longer working. I submitted the cube n=2 for artwork. 
+<p><a href = 'batch.html?meshFile=cube.obj&apply&loop=1'>Here for loop = 1 (stops working after loop = 2).</a></p>
+<img src = 'results/loop.png'>
+
+<p><hr><p><a name='Quad+subdivision'></a><h2>Quad subdivision</h2><p><hr><p>
+First, add an edge between two edges and split the face. Connect remaining vertices to the center of the intersecting vertex, and shift the position of that vertex to be the centroid of the face. Do this for all faces. 
+<p><a href = 'batch.html?meshFile=dodecahedron.obj&apply&quadSubdiv=4'>Here is the quad subdivided at level 4.</a></p>
+<img src = 'results/quad.png'>
+
+<p><hr><p><a name='Art'></a><h2>Art Contest</h2><p><hr><p>
+Some artsy fails for quad subdivision and truncate. 
+<p>
+<img src = 'results/art1.png'></p><p>
+<img src = 'results/art2.png'></p>
+
+    </div>
+    </div>
+</body>
+</html>
