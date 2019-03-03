@@ -12,10 +12,10 @@ body {
 }
 
 .gallery-container p.page-description {
-    text-align: center;
-    margin: 30px auto;
+    padding: 5px;
+    margin: 0px 0px 20px auto;
     font-size: 18px;
-    color: #85878c;
+    color: #7b7d7d;
 }
 /* Styles for the gallery */
 

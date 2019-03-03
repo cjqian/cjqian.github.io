@@ -1,0 +1,148 @@
+<head>
+    <title> COS426 Assignment 3 &mdash; Rendering &mdash; Writeup</title>
+    <link href="css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+    <script src="js/student.js"> </script>
+    <script src="js/writeup.js"> </script>
+    <div class="top">
+    <div class="main_div">
+
+        <h1> <div class=assignment>COS426 Assignment 3</div>Rendering &mdash; Writeup</h1>
+        <div class='selectable'>
+        <h2 id='student'></h2>
+        
+        Features Implemented:
+<ul>
+<li>(0,5) <a href='#Inflate'>Inflate</a></li>
+<li>(1.0) <a href='#Gouraud+shader'>Gouraud shader</a></li>
+<li>(1.0) <a href='#Phong+shader'>Phong shader</a></li>
+<li>(1.0) <a href='#Wacky'>Wacky</a></li>
+<li>(0.5) <a href='#Texture'>Texture</a></li>
+<li>(1.0) <a href='#Bump+mapping'>Bump mapping</a></li>
+<li>(2.0) <a href='#Sphere'>Sphere</a></li>
+<li>(2.0) <a href='#Box'>Box</a></li>
+<li>(2.0) <a href='#Cylinder'>Cylinder</a></li>
+<li>(3.0) <a href='#Cone'>Cone</a></li>
+<li>(1.0) <a href='#Shadows'>Shadows</a></li>
+<li>(2.0) <a href='#Transmission'>Transmission</a></li>
+<li>(1.0) <a href='#Checkerboard'>Checkerboard</a></li>
+<li>(1.0) <a href='#Other'>Other</a></li>
+<li>(1.0) <a href='#Scene'>Scene</a></li>
+<li>(1.0) <a href='#Art'>Art</a></li>
+        </ul></div>
+
+<p><hr><p><a name='Inflate'></a><h2>Inflate</h2><p><hr><p>
+Inflate moves each vertex along its normal by the inflated factor.
+<p>
+<a href = "rasterizer-batch.html?meshFile=THREE.torusknot&apply&shadingModel=Phong&inflate=-0.50">Here it is deflated at -.5.</a>
+<br>
+<img src="results/deflate.png"/>
+</p>
+
+<p>
+<a href = "rasterizer-batch.html?meshFile=THREE.torusknot&apply&shadingModel=Phong&inflate=-0.50">Here it is inflated at .5.</a>
+<br>
+<img src="results/inflate.png"/>
+</p>
+
+<p><hr><p><a name='Gouraud+shader'></a><h2>Gouraud shader</h2><p><hr><p>
+I did Gouraud after Phong, using most of the same code except setting vColor to the Phong value computed rather than changing the phong value to a vec4 and factoring in (like in Phong). The main difference is that the lighting is per-vertex, rather than per-pixel.
+<br>
+<a href = "rasterizer-batch.html?meshFile=THREE.sphere&apply&shadingModel=Gouraud&&shininess=10">So shiny, wow!</a>
+<br>
+<img src="results/gouraud.png">
+
+<p><hr><p><a name='Phong+shader'></a><h2>Phong shader</h2><p><hr><p>
+Phong shading adds the diffuse, specular, and ambient values to each pixel.
+<p>
+<a href = "rasterizer-batch.html?meshFile=THREE.sphere&apply&shadingModel=Phong&ambient=#4428c3&diffuse=#d92222&shininess=15">So shiny, wow!</a>
+<br>
+<img src="results/phong.png">
+</p>
+
+<p><hr><p><a name='Wacky'></a><h2>Wacky</h2><p><hr><p>
+Perhaps not the most aesthetic or artistic wacky, but I made a new shader and played around with mods. Here's the man using inflate slider to adjust level. At inflate = 0, wacky stays the same, so it needs a parameter to do its magic.
+<br>
+<img src="results/wacky.png"><br>
+<a href="rasterizer-batch.html?meshFile=male02.obj&apply&shadingModel=Wacky&inflate=-0.15">Check it.</a>
+
+
+<p><hr><p><a name='Texture'></a><h2>Texture</h2><p><hr><p>
+Use the UV vector and the texture2D vec4 to multiply the current color by the texture.
+<br>
+<img src="results/texture.png"><br>
+<a href="rasterizer-batch.html?meshFile=THREE.sphere&apply&shadingModel=Phong&texture=lavatile.jpg">Check it.</a>
+
+<p><hr><p><a name='Bump+mapping'></a><h2>Bump mapping</h2><p><hr><p>
+The normal is modified by a factor that depends on the mapped texture at that point.
+<img src="results/bump.png"><br>
+<a href="rasterizer-batch.html?meshFile=THREE.sphere&apply&shadingModel=Bump&inflate=0.40&texture=lavatile.jpg">Check it.</a>
+
+<p><hr><p><a name='Sphere'></a><h2>Sphere</h2><p><hr><p>
+Using the algebraic method described in the lecture notes, I implemented sphere. I had issues with the appropriate texture mapping, however; Huiwen helped me with debugging and I realized that I hadn't been checking for the case where the determinant (when solving quadratic equation) is negative.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html?">Check it.</a>
+
+<p><hr><p><a name='Box'></a><h2>Box</h2><p><hr><p>
+I checked for intersections in each of the six planes of the box for an intersection, then chose the minimum intersection. Because the box is axis aligned, the normal could either be along the x, y, or z axis.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+<p><hr><p><a name='Cylinder'></a><h2>Cylinder</h2><p><hr><p>
+I relied quite heavily on Precept 9 notes here and its subsequent equations. Small road bump while writing discs; instead of using the dot product as the distance in checking for the planes, I used distance(center, vec3(EPS, EPS, EPS)). It's fixed now, though.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+<p><hr><p><a name='Cone'></a><h2>Cone</h2><p><hr><p>
+Cone wasn't too difficult after following precept notes! I had a small error in calculating the angle, but figured it out by using length().
+<br>
+<img src="results/art.png"><br>
+<a href="raytracer.html?scene=myScene">Check it.</a>
+
+<p><hr><p><a name='Shadows'></a><h2>Shadows</h2><p><hr><p>
+For hard shadows, I just moved towards the light source and checked if there was an object in the way. If not, it's not in the shadow.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+<p><hr><p><a name='Transmission'></a><h2>Transmission</h2><p><hr><p>
+Originally, the reflectance wasn't working, but I checked Piazza and replaced my 1/eta by eta and multiplied instead of divided (typo in the original comments). I just used Snell's law.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+
+<p><hr><p><a name='Checkerboard'></a><h2>Checkerboard</h2><p><hr><p>
+Modded by a value for reasonably-sized checkers. If it's even, the color is lightened. If odd, then darkened.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+
+<p><hr><p><a name='Other'></a><h2>Other</h2><p><hr><p>
+I kind of used the pseudo-randomness mentioned in Precept so that each color is manipulated by a random factor determined by position. Now, the background is green and speckled and noisy.
+<br>
+<img src="results/frame.png"><br>
+<a href="raytracer.html">Check it.</a>
+
+<p><hr><p><a name='Scene'></a><h2>Scene</h2><p><hr><p>
+Look! It's a cute guy with a hat!
+<br>
+<img src="results/art.png"><br>
+<a href="raytracer.html?scene=myScene">Check it.</a>
+
+<p><hr><p><a name='Art'></a><h2>Art</h2><p><hr><p>
+Look! It's a cute guy with a hat!
+<br>
+<img src="results/art.png"><br>
+<a href="raytracer.html?scene=myScene">Check it.</a>
+
+    </div>
+    </div>
+</body>
+</html>
