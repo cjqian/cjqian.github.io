@@ -53,6 +53,21 @@ body {
     margin: 0;
 }
 
+/* Titles */
+figcaption {
+    background-color:#111;
+    padding: 10px;
+}
+figcaption i, figcaption p{
+    margin: 0;
+    font-family: Raleway;
+    font-size:14px;
+}
+figcaption b {
+    font-family: Lora;
+    font-size: 18px;
+}
+
 .baguetteBox-button {
     background-color: transparent !important;
 }
