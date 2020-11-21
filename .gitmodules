@@ -1,3 +1,0 @@
-[submodule "projects/guesswho"]
-	path = projects/guesswho
-	url = git@github.com:cjqian/guesswho.git
